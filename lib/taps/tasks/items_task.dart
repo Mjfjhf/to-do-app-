@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:sunday_project_todo/modal/modal.dart';
+import 'package:sunday_project_todo/shared/component/componrt.dart';
 import 'package:sunday_project_todo/shared/provider.dart';
 import 'package:sunday_project_todo/utels/deal_with_firebase.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -20,6 +21,12 @@ class ItemsTask extends StatefulWidget {
 class _ItemsTaskState extends State<ItemsTask> {
   DateTime datnew=DateTime.now();
   late var pro;
+  late var navigator;
+  @override
+  void didChangeDependencies() {
+    navigator = Navigator.of(context);
+    super.didChangeDependencies();
+  }
   @override
   Widget build(BuildContext context) {
      pro=Provider.of<MyProvider>(context);
@@ -31,7 +38,18 @@ class _ItemsTaskState extends State<ItemsTask> {
         children: [
           SlidableAction(
             onPressed: (context){
-              deletfromfirebase(widget.task);
+              sureDelet(context: context,
+                  message: "Are you sure",
+                  name1Action: 'OK',
+                  name2Action: "Cancle",
+                  callAction1: (){
+                    deletfromfirebase(widget.task);
+                    navigator.pop();
+                  },
+                  callAction2: (){
+                    navigator.pop();
+                  },colordialogtheme: pro.neTheme==ThemeMode.light?Colors.white:Colors.black);
+
             },
             backgroundColor: Colors.red,
             icon: Icons.delete_outline_rounded,
@@ -105,6 +123,8 @@ class _ItemsTaskState extends State<ItemsTask> {
           child: Column(
             children: [
               TextField(
+                autofocus: true,
+                style: Theme.of(context).textTheme.headline6,
                 decoration: InputDecoration(label: Text(AppLocalizations.of(context)!.edit_title,
                 style: Theme.of(context).textTheme.headline4,)),
                 onChanged: (value){
